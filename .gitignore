@@ -27,3 +27,5 @@ xpbar.res
 *.idb
 *.ilk
 *.exe
+*.lib
+*Debug*
