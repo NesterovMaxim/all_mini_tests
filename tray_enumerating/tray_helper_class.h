@@ -69,6 +69,44 @@ public:
 		return tray.hwnd;
 	}
 
+	RECT get_button_rect(const int ind) {
+		RECT result = { 0 };
+
+		int real_ind = ind;
+		HWND hwnd = 0;
+		bool not_overflow_area_operation = true;
+		if ( ind < _button_count_main ) {
+			hwnd = _tray_hwnd;
+		}
+		//else if ( ind >= _button_count_main &&
+		//		 ind < _button_count_overflow_area + _button_count_main ) {
+		//	not_overflow_area_operation = false;
+		//	hwnd = _tray_overflow_area_hwnd;
+		//	real_ind -= _button_count_main;
+		//}
+
+		if ( !hwnd ) return result;
+
+		RECT tray_rect = { 0 };
+		decltype(RECT::left) tray_left_base = 0;
+		if ( ::GetWindowRect(hwnd, &tray_rect) == TRUE ) {
+			tray_left_base = tray_rect.left;
+		}
+
+
+		int pid = _tray_main_pid;
+		auto data_ptr = new CProcessData<RECT>(pid);
+
+
+		auto ret_code = ::SendMessage(hwnd, TB_GETITEMRECT, ind, (LPARAM)data_ptr->GetData());
+
+		if ( ret_code == TRUE ) {
+			data_ptr->ReadData(&result);
+		}
+
+		return result;
+	}
+
 private:
 	static HWND find_tray_overflow_area_window()
 	{

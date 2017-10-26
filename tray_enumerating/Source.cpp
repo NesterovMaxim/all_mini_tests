@@ -114,16 +114,32 @@ bool check_tray(const DWORD pid)
 	std::wstringstream ss;
 	ss << L"Total icons at tray = " << tray_buttons_total << "\n";
 
+	bool found = false;
+	HWND app_hwnd = 0;
 	for (int i = 0; i<tray_buttons_total; i++)
 	{		
-		const HWND app_hwnd = tray_helper.get_icon_parent_hwnd(i);
+		app_hwnd = tray_helper.get_icon_parent_hwnd(i);
 		const DWORD app_pid = get_pid_by_hwnd(app_hwnd);
-		ss << L"pid:" << app_pid << "\n";
-		if (app_pid == pid) return true;
-	}
-	//MessageBox(0, ss.str().c_str(), L"Test Tray", MB_OK);
+		//ss << L"pid:" << app_pid << "\n";
 
-	return false;
+		RECT rect = tray_helper.get_button_rect(i);
+		//if ( ::GetWindowRect(app_hwnd, &rect) == TRUE ) {
+			//std::wstringstream ss;
+			//MessageBox(0, ss.str().c_str(), L"Test Tray", MB_OK);
+		//}
+
+		if ( app_pid == pid ) {
+			ss << "\n t: " << rect.top << " r: " << rect.right << " l: " << rect.left;
+			found = true;
+			break;
+		}
+	}
+	if ( found ) {
+
+	}
+	MessageBox(0, ss.str().c_str(), L"Test Tray", MB_OK);
+
+	return found;
 }
 
 int main(int argc, char *argv[])
